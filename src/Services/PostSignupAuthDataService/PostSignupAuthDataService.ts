@@ -6,10 +6,6 @@ export const PostSignupAuthDataService = {
       try {
         const { username , email , password } = request.body;
 
-        // if(!username || !email || !password){
-          // throw new  ErrorWhileRegisterPanelistException
-        // }
-
       if (typeof(username)!=="string"|| typeof(email)!=="string"|| typeof(password)!=="string" ||!username || !email || !password) {
         throw new ErrorWhileRegisterPanelistException
       }
