@@ -12,9 +12,9 @@ const env = cleanEnv(process.env, {
   MYSQL_USERNAME: str(),
   MYSQL_PASSWORD: str(),
   MYSQL_DATABASE: str(),
-  GEO_SERVICE_URL: str(),
-  GEO_SERVICE_API_KEY: str(),
-  GEO_SERVICE_VOXCO_URL: str(),
+  // GEO_SERVICE_URL: str(),
+  // GEO_SERVICE_API_KEY: str(),
+  // GEO_SERVICE_VOXCO_URL: str(),
 });
 
 export { env };
