@@ -6,12 +6,15 @@ export const PostSignupAuthDataService = {
       try {
         const { username , email , password } = request.body;
 
+
+        
+
       if (typeof(username)!=="string"|| typeof(email)!=="string"|| typeof(password)!=="string" ||!username || !email || !password) {
         throw new ErrorWhileRegisterPanelistException
       }
       
         
-       const createUserQuery = 'INSERT INTO users_detail (username, email, password) VALUES (?, ?, ?)';
+       const createUserQuery = 'INSERT INTO users_detail (full_name, email, password) VALUES (?, ?, ?)';
       await execute(createUserQuery, [username, email, password])
       
       response.status(200).json({ message: 'Signup successful' });
