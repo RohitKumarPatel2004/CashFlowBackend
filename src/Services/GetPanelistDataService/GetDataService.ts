@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { execute } from "../../Config/Database/QueryWrapperMysql";
 
@@ -11,8 +11,9 @@ export const GetDataService = {
       const result: any = await execute(query, bindValues);
 
       if (result.length === 1) {
+         const user = result[0];
          const token = jwt.sign({ email }, process.env.JWT_SECRET as string, { expiresIn: "24h" });
-         return response.status(200).json({ token });
+         return response.status(200).json({ user, token });
       } else {
          return response.status(401).send("Invalid email or password");
       }
@@ -21,15 +22,4 @@ export const GetDataService = {
       return response.status(500).send("Internal server error");
     }
   },
-
-  VerifyToken: (request: Request, response: Response, next: NextFunction) => {
-    const token = request.headers.authorization?.split(" ")[1];
-    if (!token) return response.status(401).send("Access Denied");
-
-    jwt.verify(token, process.env.JWT_SECRET as string, (err: any, decoded: any) => {
-      if (err) return response.status(401).send("Invalid Token");
-      request.body.email = decoded.email; 
-      next();
-    });
-  }
 };
