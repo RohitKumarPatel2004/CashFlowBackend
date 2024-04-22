@@ -6,4 +6,5 @@ const router = express.Router();
 router.post('/login', GetDataServices.GetPanelistData)
 router.post('/signupAuthData', SignupAuthDataController.PostSignupAuthData);
 
+
 export { router as AuthRoutes };
