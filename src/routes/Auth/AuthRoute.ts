@@ -1,9 +1,9 @@
 import express from 'express';
 import { SignupAuthDataController } from '../../Controllers/SignupAuthDataController/SignupAuthDataController';
-import {GetDataServices} from '../../Controllers/GetLoginDataController/GetLoginDataController';
+import {GetSigninDataServices} from '../../Controllers/GetLoginDataController/GetLoginDataController';
 const router = express.Router();
 
-router.post('/login', GetDataServices.GetPanelistData)
+router.post('/login', GetSigninDataServices.GetPanelistData)
 router.post('/signupAuthData', SignupAuthDataController.PostSignupAuthData);
 
 
