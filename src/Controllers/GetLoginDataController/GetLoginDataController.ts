@@ -6,9 +6,9 @@ export const GetSigninDataServices = {
     try {
       const result = await GetSigninDataService.Login(request, response);
       if(result){
-        response.json(result);
+    return result;
       }else{
-        response.status(404).json({error: "User Not found"});
+        return({error: "User Not found"});
       }
     }catch(e){
       next(e);
