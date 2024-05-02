@@ -8,12 +8,12 @@ import { logger } from './Config/Logger/Winston';
 import { globalExceptionHander } from './Handlers/GlobalExceptionHandler';
 import { env } from './Config/env';
 
-const baseURl = ['http://localhost:3000'];
+const baseURl = ['http://localhost:5173'];
 if (process.env.NODE_ENV !== 'production') {
-  baseURl.push('http://localhost:3000');
+  baseURl.push('http://localhost:5173');
 }
 if (process.env.NODE_ENV === 'production') {
-  baseURl.push('http://localhost:3000');
+  baseURl.push('http://localhost:5173');
 }
 
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
