@@ -11,8 +11,9 @@ export const PostSignupAuthDataService = {
         throw new ErrorWhileRegisterPanelistException
       } 
       const userExistsQuery = 'SELECT * FROM users_detail WHERE  email = ?';
-      const existingUsers:any = await execute(userExistsQuery, [username, email]);
+      const existingUsers:any = await execute(userExistsQuery, [email]);
       if (existingUsers.length>0) {
+        response.status(200).json({ message: 'Panelist Already Exists. Please Login.' });
         throw new PanelistAlreadyExistException
       }
       const hashedPassword = await bcrypt.hash(password, 10);

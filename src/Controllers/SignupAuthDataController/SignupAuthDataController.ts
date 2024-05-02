@@ -5,7 +5,7 @@ export const SignupAuthDataController = {
   PostSignupAuthData: async (request: Request, response: Response, next: NextFunction) => {
     try {
       const result = await PostSignupAuthDataService.PostSignupAuthData(request,response);
-      response.json(result);
+      return result;
     } catch (e) {
       next(e);
     }
