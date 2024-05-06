@@ -3,6 +3,7 @@ import { UserRoutes } from './User/UserRoute';
 
 import { AuthRoutes } from './Auth/AuthRoute';
 import { CourseRoutes } from './course/CourseRoute';
+import { QuizRoute } from './Quiz/QuizRoute';
 
 
 const router = express.Router();
@@ -10,5 +11,6 @@ const router = express.Router();
 router.use('/course', CourseRoutes);
 router.use('/user', UserRoutes);
 router.use('/auth', AuthRoutes);
+router.use('/quiz',QuizRoute);
 
 export default router;
