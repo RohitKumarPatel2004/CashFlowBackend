@@ -1,6 +1,16 @@
 import { execute } from "../../Config/Database/QueryWrapperMysql";
 import { NextFunction, Request, Response } from "express";
 
+interface Option {
+    text: string;
+    is_correct: boolean;
+}
+
+interface QuestionData {
+    question_text: string;
+    options: Option[];
+}
+
 interface Question {
     question: string;
     option: string[];
@@ -9,38 +19,41 @@ interface Question {
 
 export const PostQuizDataService = {
     PostQuizData: async (request: Request, response: Response, next: NextFunction) => {
-        const { course_id, questions }: { course_id: number; questions: Question[] } = request.body;
+
+        const { course_id, questions }: { course_id: number; questions: { [key: string]: Question } } = request.body;
 
         try {
-            if (!Array.isArray(questions) || questions.length === 0) {
-                return response.status(400).json({ msg: "No questions provided" });
-            }
 
-            const values: any = [];
+            const allquestion: { [key: string]: QuestionData } = {};
 
-            for (const question of questions) {
-                const { question: questionText, option, correctOption } = question;
+            for (const questionKey in questions) {
+                if (!questions.hasOwnProperty(questionKey)) continue;
+
+                const { question: questionText, option, correctOption } = questions[questionKey];
 
                 if (option.length < 4) {
                     return response.status(400).json({ msg: "Insufficient options provided for a question" });
                 }
 
-                const formattedOptions = option.map((opt, index) => ({
+                const formattedOptions: Option[] = option.map((opt: string, index: number) => ({
                     text: opt,
                     is_correct: (index + 1) === correctOption
                 }));
 
-                const questionData = {
+                const questionDataFormatted: QuestionData = {
                     question_text: questionText,
                     options: formattedOptions
                 };
 
-                const serializedQuestion = JSON.stringify(questionData);
-                values.push(serializedQuestion);
+                allquestion[questionKey] = questionDataFormatted;
+
             }
 
-            const sql = "INSERT INTO questions (course_id, question_text) VALUES (?, JSON_OBJECT('question_text', ?))";
-            await execute(sql, [course_id, values]);
+            const allquestionStringified: string = JSON.stringify(allquestion);
+            console.log(allquestionStringified)
+
+            const sql: string = "INSERT INTO questions (course_id, question_text) VALUES (?, ?)";
+            await execute(sql, [course_id, allquestionStringified]);
 
             response.status(200).json({ msg: "Questions inserted successfully" });
         } catch (error) {
@@ -49,3 +62,5 @@ export const PostQuizDataService = {
         }
     }
 };
+
+
