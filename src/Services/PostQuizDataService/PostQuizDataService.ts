@@ -50,7 +50,7 @@ export const PostQuizDataService = {
             }
 
             const allquestionStringified: string = JSON.stringify(allquestion);
-            console.log(allquestionStringified)
+            
 
             const sql: string = "INSERT INTO questions (course_id, question_text) VALUES (?, ?)";
             await execute(sql, [course_id, allquestionStringified]);
