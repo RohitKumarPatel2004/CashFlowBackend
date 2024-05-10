@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import {GetSigninDataService} from '../../Services/GetSigninDataService/GetSigninDataService'
 
-export const GetSigninDataServices = {
-  GetPanelistData: async (request: Request, response: Response, next: NextFunction) => {
+export const GetSigninDataController = {
+  GetSigninData: async (request: Request, response: Response, next: NextFunction) => {
     try {
       const result = await GetSigninDataService.Login(request, response);
       if(result){
