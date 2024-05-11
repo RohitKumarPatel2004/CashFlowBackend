@@ -23,7 +23,7 @@ export const GetQuizDataService = {
                         questions[questionKey] = {
                             question: questionItem.question_text,
                             option: questionItem.options.map((opt: any) => opt.text),
-                            correctOption: (questionItem.options.findIndex((opt: any) => opt.is_correct === true)) + 1
+                            correctOption:questionItem.options.findIndex((opt: any) => opt.is_correct === true)
                         };
                     });
                 });

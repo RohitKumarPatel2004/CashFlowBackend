@@ -5,6 +5,6 @@ import { GetQuizDataController } from '../../Controllers/GetQuizDataController/G
 const router = express.Router();
 
 router.post('/postquestion', PostQuizDataController.PostQuizData);
-router.get("/getquizquestion", GetQuizDataController.GetQuizData)
+router.post("/getquizquestion", GetQuizDataController.GetQuizData)
 
 export { router as QuizRoute };
