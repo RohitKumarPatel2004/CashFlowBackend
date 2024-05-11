@@ -20,16 +20,16 @@ interface Question {
 export const PostQuizDataService = {
     PostQuizData: async (request: Request, response: Response, next: NextFunction) => {
 
-        const { course_id, questions }: { course_id: number; questions: { [key: string]: Question } } = request.body;
+        const { course_id, allQuestions }: { course_id: number; allQuestions: { [key: string]: Question } } = request.body;
 
         try {
 
             const allquestion: { [key: string]: QuestionData } = {};
 
-            for (const questionKey in questions) {
-                if (!questions.hasOwnProperty(questionKey)) continue;
+            for (const questionKey in allQuestions) {
+                if (!allQuestions.hasOwnProperty(questionKey)) continue;
 
-                const { question: questionText, option, correctOption } = questions[questionKey];
+                const { question: questionText, option, correctOption } = allQuestions[questionKey];
 
                 if (option.length < 4) {
                     return response.status(400).json({ msg: "Insufficient options provided for a question" });
