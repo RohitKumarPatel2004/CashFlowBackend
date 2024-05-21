@@ -8,12 +8,12 @@ import { logger } from './Config/Logger/Winston';
 import { globalExceptionHander } from './Handlers/GlobalExceptionHandler';
 import { env } from './Config/env';
 
-const baseURl = ['http://localhost:5173'];
+let baseURl = [];
 if (process.env.NODE_ENV !== 'production') {
   baseURl.push('http://localhost:5173');
 }
 if (process.env.NODE_ENV === 'production') {
-  baseURl.push('http://localhost:5173');
+  baseURl.push('https://b45f-20-104-50-32.ngrok-free.app');
 }
 
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
