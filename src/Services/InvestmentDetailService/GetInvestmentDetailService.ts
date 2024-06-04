@@ -15,6 +15,7 @@ export const GetInvestmentDetailService = {
         days 
         FROM investmentdetails
         WHERE email = ?
+        ORDER BY time DESC
 
       `;
       
