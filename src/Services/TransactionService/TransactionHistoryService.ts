@@ -10,14 +10,15 @@ export const TransactionHistoryService = {
       if (!email || typeof email !== "string") {
         return response.status(400).json({ success: false, message: 'Invalid email' });
       }
-
-      // Query to fetch transaction history
       const query = `
-        SELECT type, time, amount
-        FROM transactions
-        WHERE email = ?
-        ORDER BY time DESC
-      `;
+      SELECT type, time, amount
+      FROM transactions
+      WHERE email = ? AND type IN ('deposit', 'withdrawal', 'investment') 
+      ORDER BY time DESC
+    `;
+
+    //AND type IN ('deposit', 'withdrawal', 'investment')
+    
       
       const transactionHistory: any = await execute(query, [email]);
       
