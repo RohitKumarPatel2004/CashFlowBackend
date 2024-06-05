@@ -24,40 +24,43 @@ export const TransactionService = {
       const { unique_id, balance, password: storedPassword } = user;
 
       // Check the transaction type and update balance accordingly
-      let newBalance = balance;
+      let newBalance = parseInt(balance);
       if (type === 'deposit') {
         newBalance += amount;
-      } else if (type === 'withdrawal') {
+      } 
+      else if (type === 'daily_profit') {
+        newBalance += amount;
+      }
+      else if (type === 'withdrawal') {
         // Verify password
         const passwordMatch = await bcrypt.compare(password, storedPassword);
         if (!passwordMatch) {
           response.status(400).json({ success: false, message: "Password does not match" });
           return;
         }
-        if (balance >= amount) {
+        if (newBalance >= amount) {
           newBalance -= amount;
         } else {
           response.status(400).json({ success: false, message: "Insufficient balance" });
           return;
         }
       }
-      else if(type === "investment"){
-        if (balance >= amount) {
+      else if (type === "investment") {
+        if (newBalance >= amount) {
           newBalance -= amount;
         } else {
           response.status(400).json({ success: false, message: "Insufficient balance" });
           return;
         }
-
       }
-       else {
+      else {
         response.status(400).json({ success: false, message: "Invalid transaction type" });
         return;
       }
 
       // Update balance in user_detail table
       const updateBalanceQuery = 'UPDATE user_detail SET balance = ? WHERE unique_id = ?';
-      await execute(updateBalanceQuery, [newBalance, unique_id]);
+      await execute(updateBalanceQuery, [newBalance.toString(), unique_id]);
 
       // Record the transaction in transactions table
       const recordTransactionQuery = 'INSERT INTO transactions (unique_id, email, amount, type) VALUES (?, ?, ?, ?)';
