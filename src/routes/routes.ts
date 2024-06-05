@@ -7,6 +7,7 @@ import { TransactionRoutes } from './Transaction/TransactionRoute';
 import { InvestmentRoutes } from './Investment/InvestmentRoutes';
 import { ProfitRoutes } from './Profit/ProfitRoutes';
 import { ReferralRoutes } from './Referral/ReferralRoutes';
+import { PasswordRoutes } from './ChangePassword/ChangePasswordRoute';
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use('/transaction', TransactionRoutes);
 router.use('/investment', InvestmentRoutes);
 router.use('/profit', ProfitRoutes);
 router.use('/referral', ReferralRoutes);
+router.use('/changePassword',PasswordRoutes)
 
 export default router;
