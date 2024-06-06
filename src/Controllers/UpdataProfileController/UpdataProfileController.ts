@@ -2,9 +2,9 @@ import { UpdateProfileService } from '../../Services/UpdateProfileService/Update
 import { NextFunction, Request, Response } from 'express';
 
 export const UpdateProfileController = {
-  UpdateLocation: async (request: Request, response: Response, next: NextFunction) => {
+  UpdateProfile: async (request: Request, response: Response, next: NextFunction) => {
     try {
-      await UpdateProfileService.updateLocation(request, response);
+      await UpdateProfileService.updateProfile(request, response);
     } catch (error) {
       next(error);
     }

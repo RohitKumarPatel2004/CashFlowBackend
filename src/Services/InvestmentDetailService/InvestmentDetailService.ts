@@ -79,7 +79,6 @@ export const InvestmentDetailService = {
         }
       }
 
-      console.log('Days decremented and balances updated successfully.');
     } catch (error: any) {
       console.error('An error occurred while fetching investments:', error.message);
     }
