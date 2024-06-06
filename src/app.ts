@@ -42,7 +42,6 @@ app.use(
 
 cron.schedule('*/1 * * * *', async () => {
   await InvestmentDetailService.decrementDays();
-  console.log('Decrement days task executed');
 });
 
 app.use(cookieParser());

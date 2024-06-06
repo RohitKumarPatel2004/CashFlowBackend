@@ -1,58 +1,42 @@
-import { Request, Response } from "express";
-import { execute } from "../../Config/Database/QueryWrapperMysql";
-import multer from "multer";
-
-
-const upload = multer();
+import fs from 'fs';
+import path from 'path';
+import { Request, Response } from 'express';
+import { execute } from '../../Config/Database/QueryWrapperMysql';
 
 export const UpdateProfileService = {
-  updateLocation: async (request: Request, response: Response) => {
+  updateProfile: async (request: Request, response: Response) => {
     try {
-      const { email, newLocation } = request.body;
+      const { email, full_name, location } = request.body;
+      let profilePicture: Buffer | null = null;
 
-      const updateLocationQuery = `
-        UPDATE user_detail
-        SET location = ?
-        WHERE email = ?
-      `;
+      if (request.file) {
+        const filePath = path.join(__dirname, '../../public/image', request.file.filename);
+        profilePicture = fs.readFileSync(filePath); // Read the file from disk
+        fs.unlinkSync(filePath);
+      }
 
-      const result: any = await execute(updateLocationQuery, [newLocation, email]);
+      let query: string;
+      let values: any[];
+
+      if (profilePicture) {
+        query = 'UPDATE user_detail SET full_name = ?, location = ?, profilePicture = ? WHERE email = ?';
+        values = [full_name, location, profilePicture, email];
+      } else {
+        query = 'UPDATE user_detail SET full_name = ?, location = ? WHERE email = ?';
+        values = [full_name, location, email];
+      }
+
+      const result: any = await execute(query, values);
 
       if (result.affectedRows === 0) {
-        return response.status(404).json({ success: false, message: 'User not found' });
+        response.status(404).json({ success: false, message: 'User not found' });
+      } else {
+        response.status(200).json({ success: true, message: 'Profile updated successfully' });
       }
 
-      response.status(200).json({ success: true, message: 'Location updated successfully' });
-    } catch (error: any) {
-      response.status(500).json({ success: false, message: error.message });
-    }
-  },
-
-  updateProfilePicture: async (request: Request, response: Response) => {
-    try {
-      const { email } = request.body;
-
-      if (!request.file) {
-        return response.status(400).json({ success: false, message: 'Profile picture is required' });
-      }
-
-      const profilePicture = request.file.buffer;
-
-      const updateProfilePictureQuery = `
-        UPDATE user_detail
-        SET profilePicture = ?
-        WHERE email = ?
-      `;
-
-      const result: any = await execute(updateProfilePictureQuery, [profilePicture, email]);
-
-      if (result.affectedRows === 0) {
-        return response.status(404).json({ success: false, message: 'User not found' });
-      }
-
-      response.status(200).json({ success: true, message: 'Profile picture updated successfully' });
-    } catch (error: any) {
-      response.status(500).json({ success: false, message: error.message });
+    } catch (error) {
+      console.error('Error:', error);
+      response.status(500).json({ success: false, message: 'An error occurred while updating the profile' });
     }
   }
 };

@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 export const UpdateProfilePicController = {
   UpdatePic: async (request: Request, response: Response, next: NextFunction) => {
     try {
-      await UpdateProfileService.updateProfilePicture(request, response);
+      // await UpdateProfileService.updateProfile(request, response);
     } catch (error) {
       next(error);
     }
