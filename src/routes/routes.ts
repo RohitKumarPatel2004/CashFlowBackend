@@ -1,4 +1,4 @@
-// src/routes/index.js
+
 import express from 'express';
 import { AuthRoutes } from './Auth/AuthRoute';
 import { InvestRoutes } from './Invest/InvestRoute';
@@ -9,6 +9,7 @@ import { ProfitRoutes } from './Profit/ProfitRoutes';
 import { ReferralRoutes } from './Referral/ReferralRoutes';
 import { PasswordRoutes } from './ChangePassword/ChangePasswordRoute';
 import { AdminDashboard } from './DashboardData/DashboardDataRoute';
+import { approveWithdrawalRoutes } from './Transaction/WithdrawApprovel';
 
 const router = express.Router();
 
@@ -21,6 +22,8 @@ router.use('/profit', ProfitRoutes);
 router.use('/referral', ReferralRoutes);
 router.use('/changePassword',PasswordRoutes)
 router.use('/adminDashboard',AdminDashboard)
+router.use('/approveWithrawal',approveWithdrawalRoutes)
+
 
 
 export default router;

@@ -7,7 +7,8 @@ export const TransactionService = {
     try {
       const { email, type, amount, password } = request.body;
 
-      if (!email || !type || !amount || typeof email !== 'string' || typeof type !== 'string' || typeof amount !== 'number' || (type === 'withdrawal' && !password)) {
+     
+      if (!email || !type || typeof amount !== 'number' || (type === 'withdrawal' && !password)) {
         if (response) {
           response.status(400).json({ success: false, message: 'Invalid request data' });
         }
@@ -26,51 +27,61 @@ export const TransactionService = {
       }
 
       const { unique_id, balance, password: storedPassword } = user;
-
-      // Check the transaction type and update balance accordingly
       let newBalance = parseInt(balance, 10);
-      if (type === 'deposit' || type === 'daily_profit' || type === 'referral_award') {
-        newBalance += amount;
-      } else if (type === 'withdrawal') {
-        // Verify password
-        const passwordMatch = await bcrypt.compare(password, storedPassword);
-        if (!passwordMatch) {
-          if (response) {
-            response.status(400).json({ success: false, message: 'Password does not match' });
+
+      // Handle transaction based on type
+      switch (type) {
+        case 'deposit':
+        case 'daily_profit':
+        case 'referral_award':
+        case 'rejected_Amount':
+          newBalance += amount;
+          break;
+        case 'withdrawal':
+          // Verify password for withdrawal
+          const passwordMatch = await bcrypt.compare(password, storedPassword);
+          if (!passwordMatch) {
+            if (response) {
+              response.status(400).json({ success: false, message: 'Password does not match' });
+            }
+            return { success: false, message: 'Password does not match' };
           }
-          return { success: false, message: 'Password does not match' };
-        }
-        if (newBalance >= amount) {
-          newBalance -= amount;
-        } else {
-          if (response) {
-            response.status(400).json({ success: false, message: 'Insufficient balance' });
+          if (newBalance >= amount) {
+            newBalance -= amount;
+          } else {
+            if (response) {
+              response.status(400).json({ success: false, message: 'Insufficient balance' });
+            }
+            return { success: false, message: 'Insufficient balance' };
           }
-          return { success: false, message: 'Insufficient balance' };
-        }
-      } else if (type === 'investment') {
-        if (newBalance >= amount) {
-          newBalance -= amount;
-        } else {
-          if (response) {
-            response.status(400).json({ success: false, message: 'Insufficient balance' });
+          break;
+        case 'investment':
+          if (newBalance >= amount) {
+            newBalance -= amount;
+          } else {
+            if (response) {
+              response.status(400).json({ success: false, message: 'Insufficient balance' });
+            }
+            return { success: false, message: 'Insufficient balance' };
           }
-          return { success: false, message: 'Insufficient balance' };
-        }
-      } else {
-        if (response) {
-          response.status(400).json({ success: false, message: 'Invalid transaction type' });
-        }
-        return { success: false, message: 'Invalid transaction type' };
+          break;
+        default:
+          if (response) {
+            response.status(400).json({ success: false, message: 'Invalid transaction type' });
+          }
+          return { success: false, message: 'Invalid transaction type' };
       }
 
       // Update balance in user_detail table
       const updateBalanceQuery = 'UPDATE user_detail SET balance = ? WHERE unique_id = ?';
       await execute(updateBalanceQuery, [newBalance.toString(), unique_id]);
 
+      // Determine the transaction status
+      const status = type === 'withdrawal' ? 'pending' : 'success';
+
       // Record the transaction in transactions table
-      const recordTransactionQuery = 'INSERT INTO transactions (unique_id, email, amount, type) VALUES (?, ?, ?, ?)';
-      await execute(recordTransactionQuery, [unique_id, email, amount, type]);
+      const recordTransactionQuery = 'INSERT INTO transactions (unique_id, email, amount, type, status) VALUES (?, ?, ?, ?, ?)';
+      await execute(recordTransactionQuery, [unique_id, email, amount, type, status]);
 
       if (response) {
         response.status(200).json({ success: true, message: 'Transaction successful', newBalance });
