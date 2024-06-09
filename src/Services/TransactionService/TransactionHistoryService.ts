@@ -11,7 +11,7 @@ export const TransactionHistoryService = {
         return response.status(400).json({ success: false, message: 'Invalid email' });
       }
       const query = `
-      SELECT type, time, amount
+      SELECT type, time, amount , status
       FROM transactions
       WHERE email = ? AND type IN ('deposit', 'withdrawal', 'investment') 
       ORDER BY time DESC
