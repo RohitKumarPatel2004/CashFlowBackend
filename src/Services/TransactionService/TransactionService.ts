@@ -1,13 +1,13 @@
 import { execute } from '../../Config/Database/QueryWrapperMysql';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 export const TransactionService = {
   handleTransaction: async (request: Request, response?: Response): Promise<any> => {
     try {
       const { email, type, amount, password } = request.body;
 
-     
       if (!email || !type || typeof amount !== 'number' || (type === 'withdrawal' && !password)) {
         if (response) {
           response.status(400).json({ success: false, message: 'Invalid request data' });
@@ -74,14 +74,17 @@ export const TransactionService = {
 
       // Update balance in user_detail table
       const updateBalanceQuery = 'UPDATE user_detail SET balance = ? WHERE unique_id = ?';
-      await execute(updateBalanceQuery, [newBalance.toString(), unique_id]);
+      await execute(updateBalanceQuery, [newBalance, unique_id]);
 
       // Determine the transaction status
       const status = type === 'withdrawal' ? 'pending' : 'success';
 
+      // Generate a unique transaction ID
+      const transactionId = uuidv4();
+
       // Record the transaction in transactions table
-      const recordTransactionQuery = 'INSERT INTO transactions (unique_id, email, amount, type, status) VALUES (?, ?, ?, ?, ?)';
-      await execute(recordTransactionQuery, [unique_id, email, amount, type, status]);
+      const recordTransactionQuery = 'INSERT INTO transactions (unique_id, transaction_id, email, amount, type, status) VALUES (?, ?, ?, ?, ?, ?)';
+      await execute(recordTransactionQuery, [unique_id, transactionId, email, amount.toFixed(2), type, status]);
 
       if (response) {
         response.status(200).json({ success: true, message: 'Transaction successful', newBalance });
