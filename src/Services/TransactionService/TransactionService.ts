@@ -82,9 +82,15 @@ export const TransactionService = {
       // Generate a unique transaction ID
       const transactionId = uuidv4();
 
-      // Record the transaction in transactions table
       const recordTransactionQuery = 'INSERT INTO transactions (unique_id, transaction_id, email, amount, type, status) VALUES (?, ?, ?, ?, ?, ?)';
       await execute(recordTransactionQuery, [unique_id, transactionId, email, amount.toFixed(2), type, status]);
+
+      if(type==='withdrawal'){
+        const recordTransactionQuery = 'INSERT INTO withdrawApprove (unique_id, transaction_id, email, amount, type, status) VALUES (?, ?, ?, ?, ?, ?)';
+        await execute(recordTransactionQuery, [unique_id, transactionId, email, amount.toFixed(2), type, status]);
+  
+
+      }
 
       if (response) {
         response.status(200).json({ success: true, message: 'Transaction successful', newBalance });
