@@ -10,6 +10,7 @@ import { ReferralRoutes } from './Referral/ReferralRoutes';
 import { PasswordRoutes } from './ChangePassword/ChangePasswordRoute';
 import { AdminDashboard } from './DashboardData/DashboardDataRoute';
 import { approveWithdrawalRoutes } from './Transaction/WithdrawApprovel';
+import { approveAdminWithdrawalRoutes } from './Transaction/AdminPendingWithdrawal';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.use('/referral', ReferralRoutes);
 router.use('/changePassword',PasswordRoutes)
 router.use('/adminDashboard',AdminDashboard)
 router.use('/approveWithrawal',approveWithdrawalRoutes)
+router.use('/adminApproveWithrawal',approveAdminWithdrawalRoutes)
 
 
 

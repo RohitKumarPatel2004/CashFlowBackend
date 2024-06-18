@@ -1,12 +1,18 @@
 import { execute } from '../../Config/Database/QueryWrapperMysql';
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import { TransactionService } from './TransactionService';
 
-export const PendingWithdrawal = {
+export const AdminPendingWithdrawalService = {
   getPendingWithdrawals: async (request: Request, response: Response) => {
     try {
-      const query = 'SELECT id, transaction_id, email, amount, time FROM withdrawApprove WHERE status = ? AND type = ?';
-      const withdrawals = await execute(query, ['pending', 'withdrawal']);
+      const query = `
+        SELECT w.id,w.transaction_id, w.email, w.amount, w.time 
+        FROM withdrawApprove w
+        JOIN transactions t ON w.transaction_id = t.transaction_id
+        WHERE w.status = ? AND w.type = ? AND t.status = ? AND t.type = ?
+      `;
+      const withdrawals = await execute(query, ['success', 'withdrawal', 'pending', 'withdrawal']);
       response.status(200).json({ success: true, withdrawals });
     } catch (error: any) {
       response.status(500).json({ success: false, message: 'An error occurred', error: error.message });
@@ -19,6 +25,9 @@ export const PendingWithdrawal = {
 
       const updateQuery = 'UPDATE withdrawApprove SET status = ? WHERE transaction_id = ? AND type = ?';
       await execute(updateQuery, ['success', transactionId, 'withdrawal']);
+
+      const updateTransactionQuery = 'UPDATE transactions SET status = ? WHERE transaction_id = ? AND type = ?';
+      await execute(updateTransactionQuery, ['success', transactionId, 'withdrawal']);
 
       response.status(200).json({ success: true, message: 'Withdrawal approved' });
     } catch (error: any) {
@@ -45,8 +54,8 @@ export const PendingWithdrawal = {
       await execute('START TRANSACTION');
 
       try {
-        const updateWithdrawQuery = 'UPDATE withdrawApprove SET status = ? WHERE transaction_id = ? AND type = ?';
-        await execute(updateWithdrawQuery, ['failed', transactionId, 'withdrawal']);
+        const updateQuery = 'UPDATE withdrawApprove SET status = ? WHERE transaction_id = ? AND type = ?';
+        await execute(updateQuery, ['failed', transactionId, 'withdrawal']);
 
         const updateTransactionQuery = 'UPDATE transactions SET status = ? WHERE transaction_id = ? AND type = ?';
         await execute(updateTransactionQuery, ['failed', transactionId, 'withdrawal']);
@@ -60,11 +69,10 @@ export const PendingWithdrawal = {
           }
         } as Request;
 
-        // Properly mock the response object with correct type
         const transactionResponse = {
-          status: function (statusCode: number) {
+          status: function(statusCode: number) {
             return {
-              json: function (body: any) {
+              json: function(body: any) {
                 return { statusCode, body };
               }
             };
@@ -73,9 +81,9 @@ export const PendingWithdrawal = {
 
         const result = await TransactionService.handleTransaction(transactionRequest, transactionResponse);
 
-        // if (result.statusCode !== 200) {
-        //   throw new Error('Transaction service failed');
-        // }
+        if (!result.success) {
+          throw new Error(result.message);
+        }
 
         // Commit transaction
         await execute('COMMIT');
