@@ -15,5 +15,13 @@ export const GetAdminDashboardDataController = {
     } catch (error) {
       next(error);
     }
-  }
+  },
+ 
+  modifyUserType:async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      await GetAdminDashboardDataService.modifyUserType(request, response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
